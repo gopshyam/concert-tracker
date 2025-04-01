@@ -1,0 +1,4 @@
+2025-03-30 22:12:58,779 - INFO - Starting concert database update
+2025-03-30 22:12:58,849 - INFO - Successfully updated 890 concerts
+2025-03-30 22:12:58,849 - INFO - Parsing stats: ParsingMetadata(total_concerts=890, parsed_concerts=890, missing_artists=97, missing_venues=90)
+2025-03-30 22:12:58,849 - INFO - Concert update completed successfully
