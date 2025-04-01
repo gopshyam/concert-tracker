@@ -36,9 +36,23 @@
             text-decoration: none;
         }
         .venue-name {
-            font-size: 1.1rem;
-            color: #34495e;
+            font-size: 1.2rem;
+            color: #6c757d;
             margin-bottom: 0.5rem;
+            text-decoration: none;
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            background-color: #fff;
+            transition: all 0.2s;
+        }
+        .venue-name:hover {
+            color: #495057;
+            background-color: #f8f9fa;
+            border-color: #adb5bd;
+            text-decoration: none;
+            transform: translateY(-2px);
         }
         .price-tag {
             font-size: 1.1rem;
@@ -88,9 +102,11 @@
                                         </a>
                                     `).join('')}
                                 </div>
-                                <div class="venue-name">
-                                    ${concert.venue || 'Venue TBA'}
-                                </div>
+                                ${concert.venue ? `
+                                    <a href="/venue/${concert.venue.id}" class="venue-name">
+                                        📍 ${concert.venue.name}
+                                    </a>
+                                ` : '<div class="venue-name">📍 Venue TBA</div>'}
                                 ${concert.price ? `
                                     <div class="price-tag">
                                         ${concert.price}

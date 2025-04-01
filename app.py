@@ -41,6 +41,37 @@ def artist_page(artist_id):
     finally:
         db.close()
 
+@app.route('/venue/<int:venue_id>')
+def venue_page(venue_id):
+    try:
+        db = next(get_db())
+        venue = db.query(Venue).get(venue_id)
+        if not venue:
+            abort(404)
+        
+        # Get all concerts for this venue
+        concerts = db.query(Concert).filter(Concert.venue_id == venue_id).all()
+        
+        # Convert concerts to dict format with artist information
+        concert_list = []
+        for concert in concerts:
+            concert_dict = {
+                'date': concert.date,
+                'time': concert.time,
+                'price': concert.price,
+                'age_restriction': concert.age_restriction,
+                'artists': [{'id': artist.id, 'name': artist.name} for artist in concert.artists]
+            }
+            concert_list.append(concert_dict)
+        
+        return render_template('venue.html', venue=venue, concerts=concert_list)
+        
+    except Exception as e:
+        print(f"Error in venue_page: {str(e)}")
+        abort(500)
+    finally:
+        db.close()
+
 @app.route('/api/concerts')
 def get_concerts():
     try:
@@ -56,7 +87,7 @@ def get_concerts():
             concert_dict = {
                 'date': concert.date,
                 'artists': [{'id': artist.id, 'name': artist.name} for artist in concert.artists],
-                'venue': concert.venue.name if concert.venue else None,
+                'venue': {'id': concert.venue.id, 'name': concert.venue.name} if concert.venue else None,
                 'age_restriction': concert.age_restriction,
                 'price': concert.price,
                 'time': concert.time
