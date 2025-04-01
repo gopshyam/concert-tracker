@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, render_template
+from flask import Flask, jsonify, render_template, abort
 from flask_cors import CORS
 from models import get_db, Concert, Artist, Venue
 from sqlalchemy.orm import Session
@@ -9,6 +9,37 @@ CORS(app)  # Enable CORS for all routes
 @app.route('/')
 def index():
     return render_template('index.html')
+
+@app.route('/artist/<int:artist_id>')
+def artist_page(artist_id):
+    try:
+        db = next(get_db())
+        artist = db.query(Artist).get(artist_id)
+        if not artist:
+            abort(404)
+        
+        # Get all concerts for this artist
+        concerts = db.query(Concert).join(Concert.artists).filter(Artist.id == artist_id).all()
+        
+        # Convert concerts to dict format
+        concert_list = []
+        for concert in concerts:
+            concert_dict = {
+                'date': concert.date,
+                'venue': concert.venue.name if concert.venue else None,
+                'age_restriction': concert.age_restriction,
+                'price': concert.price,
+                'time': concert.time
+            }
+            concert_list.append(concert_dict)
+        
+        return render_template('artist.html', artist=artist, concerts=concert_list)
+        
+    except Exception as e:
+        print(f"Error in artist_page: {str(e)}")
+        abort(500)
+    finally:
+        db.close()
 
 @app.route('/api/concerts')
 def get_concerts():
@@ -24,7 +55,7 @@ def get_concerts():
         for concert in concerts:
             concert_dict = {
                 'date': concert.date,
-                'artists': [artist.name for artist in concert.artists],
+                'artists': [{'id': artist.id, 'name': artist.name} for artist in concert.artists],
                 'venue': concert.venue.name if concert.venue else None,
                 'age_restriction': concert.age_restriction,
                 'price': concert.price,
