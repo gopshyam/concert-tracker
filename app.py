@@ -27,6 +27,7 @@ def artist_page(artist_id):
             concert_dict = {
                 'date': concert.date,
                 'venue': concert.venue.name if concert.venue else None,
+                'venue_id': concert.venue.id if concert.venue else None,
                 'age_restriction': concert.age_restriction,
                 'price': concert.price,
                 'time': concert.time

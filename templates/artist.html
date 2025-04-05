@@ -5,83 +5,58 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ artist.name }} - Bay Area Concerts</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        .artist-header {
-            background-color: #f8f9fa;
-            padding: 2rem 0;
-            margin-bottom: 2rem;
-        }
-        .concert-card {
-            transition: transform 0.2s;
-        }
-        .concert-card:hover {
-            transform: translateY(-5px);
-        }
-        .venue-name {
-            font-size: 1.1rem;
-            color: #34495e;
-            margin-bottom: 0.5rem;
-        }
-        .price-tag {
-            font-size: 1.1rem;
-            color: #198754;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-        .date-time {
-            font-size: 0.9rem;
-            color: #6c757d;
-            margin-bottom: 0.5rem;
-        }
-        .age-restriction {
-            font-size: 0.85rem;
-            color: #6c757d;
-            font-style: italic;
-        }
-    </style>
+    <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
 </head>
 <body>
-    <div class="artist-header">
+    <div class="page-header">
         <div class="container">
-            <h1 class="display-4">{{ artist.name }}</h1>
-            <p class="lead">Upcoming concerts in the Bay Area</p>
+            <a href="/" class="back-link">← Back to all concerts</a>
+            <h1 class="page-title">{{ artist.name }}</h1>
+            <p class="page-subtitle">Upcoming concerts</p>
         </div>
     </div>
 
     <div class="container">
-        <div class="row" id="concerts-container">
-            {% for concert in concerts %}
-            <div class="col-md-4 mb-4">
-                <div class="card concert-card h-100">
-                    <div class="card-body">
-                        <div class="venue-name">
-                            {{ concert.venue or 'Venue TBA' }}
-                        </div>
-                        {% if concert.price %}
-                        <div class="price-tag">
-                            {{ concert.price }}
-                        </div>
-                        {% endif %}
-                        <div class="date-time">
-                            {{ concert.date }}
-                            {% if concert.time %}
-                            • {{ concert.time }}
+        {% if concerts %}
+            <div class="row">
+                {% for concert in concerts %}
+                <div class="col-md-6 mb-4">
+                    <div class="card concert-card h-100">
+                        <div class="card-body">
+                            <div class="date-time">
+                                {{ concert.date }}
+                                {% if concert.time %}
+                                • {{ concert.time }}
+                                {% endif %}
+                            </div>
+                            <div class="venue-name">
+                                {% if concert.venue and concert.venue_id %}
+                                    <a href="/venue/{{ concert.venue_id }}">📍 {{ concert.venue }}</a>
+                                {% else %}
+                                    <span class="venue-tba">📍 Venue TBA</span>
+                                {% endif %}
+                            </div>
+                            {% if concert.price %}
+                            <div class="price-tag">
+                                {{ concert.price }}
+                            </div>
+                            {% endif %}
+                            {% if concert.age_restriction %}
+                            <div class="age-restriction">
+                                {{ concert.age_restriction }}
+                            </div>
                             {% endif %}
                         </div>
-                        {% if concert.age_restriction %}
-                        <div class="age-restriction">
-                            {{ concert.age_restriction }}
-                        </div>
-                        {% endif %}
                     </div>
                 </div>
+                {% endfor %}
             </div>
-            {% endfor %}
-        </div>
+        {% else %}
+            <div class="no-concerts">
+                <p>No upcoming concerts found for {{ artist.name }}.</p>
+                <p>Check back later for updates!</p>
+            </div>
+        {% endif %}
     </div>
-
-    <script>
-        // Add any JavaScript functionality here if needed
-    </script>
 </body>
 </html> 
